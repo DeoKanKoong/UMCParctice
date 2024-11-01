@@ -81,7 +81,7 @@ const SignupContainer = styled.div`
   height: 100%;
   width: 100%;
   color: #fff;
-  margin-top: -50px;
+  margin-top: -100px;
 `;
 
 const Form = styled.form`
