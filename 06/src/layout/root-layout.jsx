@@ -55,7 +55,6 @@ const StyledSidebar = styled(Sidebar)`
 `;
 
 const Content = styled.div`
-    padding: 20px;
     background-color: #141414;
     flex-grow: 1;
     height: calc(100vh - 50px);

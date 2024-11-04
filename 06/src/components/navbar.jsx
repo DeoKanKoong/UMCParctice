@@ -1,38 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useContext, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import axios from 'axios';
+import { AuthContext } from '../AutoContext';
 
 const Navbar = () => {
-  const [nickname, setNickname] = useState(null);
+  const { nickname, handleLogout, fetchUserData } = useContext(AuthContext);
   const navigate = useNavigate();
-
-  const fetchUserData = async () => {
-    const accessToken = localStorage.getItem('accessToken');
-    if (accessToken) {
-      try {
-        const response = await axios.get('http://localhost:3000/user/me', {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        const email = response.data.email;
-        setNickname(email.split('@')[0]);
-      } catch (error) {
-        console.error('유저 정보 불러오기 실패:', error);
-        handleLogout();
-      }
-    }
-  };
+  const location = useLocation();
 
   useEffect(() => {
     fetchUserData();
-  }, []); 
+  }, [location]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    setNickname(null);
+  const handleLogoutClick = () => {
+    handleLogout();
     navigate('/login');
   };
 
@@ -43,7 +24,7 @@ const Navbar = () => {
         {nickname ? (
           <>
             <WelcomeText>안녕하세요, {nickname}님!</WelcomeText>
-            <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
+            <LogoutButton onClick={handleLogoutClick}>로그아웃</LogoutButton>
           </>
         ) : (
           <>

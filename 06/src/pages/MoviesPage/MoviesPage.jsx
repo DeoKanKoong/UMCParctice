@@ -46,10 +46,15 @@ const MoviesPage = () => {
 export default MoviesPage;
 
 const Container = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     padding: 20px;
     color: white;
     background-color: #000;
-    height: 100%;
+    height: calc(100vh - 70px); // navbar와 sidebar 공간을 제외한 높이 설정 (navbar 높이 고려)
+    box-sizing: border-box;
+    overflow: hidden;
 `;
 
 const Title = styled.h1`

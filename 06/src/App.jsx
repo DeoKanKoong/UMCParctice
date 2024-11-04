@@ -10,32 +10,31 @@ import SearchPage from './pages/SearchPage/SearchPage';
 import LoginPage from './pages/LoginPage/LoginPage.jsx';
 import SignupPage from './pages/SignupPage/SignupPage.jsx';
 import NotFound from './pages/not-found';
-import HomePage from './pages/HomePage';  
+import HomePage from './pages/HomePage';
 import MovieDetailPage from './pages/MovieDetailPage';
-
+import { AuthProvider } from './AutoContext.jsx';
 
 const router = createBrowserRouter([
-    {
-        path: '/',
-        element: <RootLayout />,
-        errorElement: <NotFound />,
-        children: [
-            { path: '/', element: <HomePage /> },
-            { path: 'movies', element: <MoviesPage /> },
-            { path: 'movies/now-playing', element: <NowPlayingPage /> },
-            { path: 'movies/popular', element: <PopularPage /> },
-            { path: 'movies/top-rated', element: <TopRatedPage /> },
-            { path: 'movies/upcoming', element: <UpcomingPage /> },
-            { path: 'movies/:movieId', element: <MovieDetailPage /> },
-            { path: 'search', element: <SearchPage /> },
-            { path: 'login', element: <LoginPage /> },
-            { path: 'signup', element: <SignupPage /> },
-        ],
-    },
+  { path: '/', element: <RootLayout />, errorElement: <NotFound />, children: [
+      { path: '/', element: <HomePage /> },
+      { path: 'movies', element: <MoviesPage /> },
+      { path: 'movies/now-playing', element: <NowPlayingPage /> },
+      { path: 'movies/popular', element: <PopularPage /> },
+      { path: 'movies/top-rated', element: <TopRatedPage /> },
+      { path: 'movies/upcoming', element: <UpcomingPage /> },
+      { path: 'movies/:movieId', element: <MovieDetailPage /> },
+      { path: 'search', element: <SearchPage /> },
+      { path: 'login', element: <LoginPage /> },
+      { path: 'signup', element: <SignupPage /> },
+  ]},
 ]);
 
 function App() {
-    return <RouterProvider router={router} />;
+  return (
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  );
 }
 
 export default App;
