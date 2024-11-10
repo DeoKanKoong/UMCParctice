@@ -1,12 +1,14 @@
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
 import SkeletonMovieCard from '../components/SkeletonMovieCard';
+import LoadingSpinner from '../components/LoadingSpinner';
 
-const fetchNowPlayingMovies = async () => {
+const fetchNowPlayingMovies = async ({ pageParam = 1 }) => {
   const apiKey = import.meta.env.VITE_API_KEY;
   const apiUrl = import.meta.env.VITE_MOVIE_API_URL;
-  const response = await fetch(`${apiUrl}/movie/now_playing?api_key=${apiKey}&language=ko-KR`);
+  const response = await fetch(`${apiUrl}/movie/now_playing?api_key=${apiKey}&language=ko-KR&page=${pageParam}`);
 
   if (!response.ok) {
     throw new Error('Failed to fetch data');
@@ -15,29 +17,61 @@ const fetchNowPlayingMovies = async () => {
 };
 
 const NowPlayingPage = () => {
-  const { data, isLoading, isError } = useQuery({
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
     queryKey: ['nowPlayingMovies'],
     queryFn: fetchNowPlayingMovies,
+    getNextPageParam: (lastPage) => lastPage.page < lastPage.total_pages ? lastPage.page + 1 : undefined,
   });
 
-  if (isLoading) return <SkeletonMovieCard />;
+  const observerRef = useRef();
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasNextPage) {
+        fetchNextPage();
+      }
+    }, { threshold: 1.0 });
+
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observer.unobserve(observerRef.current);
+      }
+    };
+  }, [fetchNextPage, hasNextPage]);
+
+  if (isLoading) return <LoadingSpinner />;
   if (isError) return <h1 style={{ color: 'white' }}>에러 발생</h1>;
 
   return (
     <Container>
       <Title>현재 상영중인 영화</Title>
-      {data?.results && (
+      {data?.pages && (
         <MovieList>
-          {data.results.map((movie) => (
-            <MovieCard key={movie.id}>
-              <Link to={`/movies/${movie.id}`}>
-                <MovieImage src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`} alt={movie.title} />
-                <Label>{movie.title}</Label>
-              </Link>
-            </MovieCard>
-          ))}
+          {data.pages.flatMap((page) =>
+            page.results.map((movie) => (
+              <MovieCard key={movie.id}>
+                <Link to={`/movies/${movie.id}`}>
+                  <MovieImage src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`} alt={movie.title} />
+                  <Label>{movie.title}</Label>
+                </Link>
+              </MovieCard>
+            ))
+          )}
         </MovieList>
       )}
+      <div ref={observerRef} style={{ height: '20px', background: 'transparent' }} />
+      {isFetchingNextPage && <p style={{ color: 'white', textAlign: 'center' }}>로딩중...</p>}
     </Container>
   );
 };

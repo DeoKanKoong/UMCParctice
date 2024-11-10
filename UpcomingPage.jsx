@@ -1,12 +1,13 @@
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import SkeletonMovieCard from '../components/SkeletonMovieCard';
+import { useEffect, useRef } from 'react';
 
-const fetchUpcomingMovies = async () => {
+const fetchUpcomingMovies = async ({ pageParam = 1 }) => {
   const apiKey = import.meta.env.VITE_API_KEY;
   const apiUrl = import.meta.env.VITE_MOVIE_API_URL;
-  const response = await fetch(`${apiUrl}/movie/upcoming?api_key=${apiKey}&language=ko-KR`);
+  const response = await fetch(`${apiUrl}/movie/upcoming?api_key=${apiKey}&language=ko-KR&page=${pageParam}`);
 
   if (!response.ok) {
     throw new Error('Failed to fetch data');
@@ -15,33 +16,77 @@ const fetchUpcomingMovies = async () => {
 };
 
 const UpcomingPage = () => {
-  const { data, isLoading, isError } = useQuery({
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
     queryKey: ['upcomingMovies'],
     queryFn: fetchUpcomingMovies,
+    getNextPageParam: (lastPage) => {
+      const nextPage = lastPage.page + 1;
+      return nextPage <= lastPage.total_pages ? nextPage : undefined;
+    },
   });
-  const navigate = useNavigate();
 
-  if (isLoading) return <SkeletonMovieCard />;
+  const navigate = useNavigate();
+  const observerRef = useRef();
+
+  useEffect(() => {
+    if (!observerRef.current || !hasNextPage) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasNextPage) {
+        fetchNextPage();
+      }
+    }, { threshold: 1.0 });
+
+    observer.observe(observerRef.current);
+
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage]);
+
+  if (isLoading) {
+    return (
+      <SkeletonContainer>
+        {Array.from({ length: 6 }).map((_, index) => (
+          <SkeletonMovieCard key={index} />
+        ))}
+      </SkeletonContainer>
+    );
+  }
+
   if (isError) return <h1 style={{ color: 'white' }}>에러 발생</h1>;
 
   return (
     <Container>
       <Title>개봉 예정중인 영화</Title>
-      {data?.results && (
-        <MovieList>
-          {data.results.map((movie) => (
+      <MovieList>
+        {data.pages.flatMap((page) =>
+          page.results.map((movie) => (
             <MovieCard key={movie.id} onClick={() => navigate(`/movies/${movie.id}`)}>
               <MovieImage src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} />
               <Label>{movie.title}</Label>
             </MovieCard>
-          ))}
-        </MovieList>
-      )}
+          ))
+        )}
+      </MovieList>
+      <div ref={observerRef} style={{ height: '20px', background: 'transparent' }} />
+      {isFetchingNextPage && <SkeletonMovieCard />}
     </Container>
   );
 };
 
 export default UpcomingPage;
+
+const SkeletonContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
+`;
 
 const Container = styled.div`
   color: white;
