@@ -1,4 +1,3 @@
-// src/App.jsx
 import React, { useState } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -20,13 +19,11 @@ function App() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  // useQuery: 객체 형태로 수정
   const { data: tasks, isLoading, error } = useQuery({
     queryKey: ['todos', searchTitle],
     queryFn: () => fetchTodos(searchTitle),
   });
 
-  // useMutation: 추가 기능
   const addTodoMutation = useMutation({
     mutationFn: (newTodo) => axios.post('http://localhost:3000/todo', newTodo),
     onSuccess: () => {
@@ -34,7 +31,6 @@ function App() {
     },
   });
 
-  // useMutation: 삭제 기능
   const deleteTodoMutation = useMutation({
     mutationFn: (id) => axios.delete(`http://localhost:3000/todo/${id}`),
     onSuccess: () => {
@@ -42,7 +38,6 @@ function App() {
     },
   });
 
-  // useMutation: 수정 기능
   const updateTodoMutation = useMutation({
     mutationFn: ({ id, updates }) => axios.patch(`http://localhost:3000/todo/${id}`, updates),
     onSuccess: () => {
