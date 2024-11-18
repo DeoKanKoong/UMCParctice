@@ -1,0 +1,151 @@
+.todo-container {
+  width: 100%;
+  max-width: 600px;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.todo-input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.todo-add-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.todo-list {
+  width: 100%;
+  max-width: 700px; 
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+  box-sizing: border-box;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.todo-content {
+  flex: 1; 
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.todo-checkbox {
+  transform: scale(1.2);
+  cursor: pointer;
+}
+
+.todo-text {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.todo-description {
+  font-size: 14px;
+  color: #555;
+  margin: 0;
+}
+
+.todo-buttons {
+  display: flex;
+  gap: 10px;
+  margin-left: auto; 
+}
+
+.todo-edit-button,
+.todo-delete-button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.todo-edit-button {
+  background-color: #ffc107;
+  color: #fff;
+}
+
+.todo-delete-button {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.todo-save-button {
+  padding: 5px 10px;
+  font-size: 14px; 
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff; 
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.todo-save-button:hover {
+  background-color: #0056b3;
+}
+
+.todo-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.edit-input {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.save-button, .cancel-button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 5px;
+  transition: background-color 0.3s;
+}
+
+.save-button {
+  background-color: #28a745;
+  color: white;
+}
+
+.save-button:hover {
+  background-color: #218838;
+}
+
+.cancel-button {
+  background-color: #dc3545;
+  color: white;
+}
+
+.cancel-button:hover {
+  background-color: #c82333;
+}
