@@ -11,9 +11,9 @@ function App() {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentTime(new Date()); // 초마다 시간 갱신
+      setCurrentTime(new Date());
     }, 1000);
-    return () => clearInterval(timer); // 컴포넌트 언마운트 시 타이머 제거
+    return () => clearInterval(timer);
   }, []);
 
   const handleAddTodo = () => {
