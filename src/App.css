@@ -1,57 +1,94 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body, html {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-}
-
-.app-container {
+body {
+  background-color: #f0f4f8;
+  font-family: 'Arial', sans-serif;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  width: 100vw; 
-  box-sizing: border-box;
-  text-align: center;
   margin: 0;
-  padding: 0;
 }
 
-.app-title {
-  font-size: 28px;
-  margin-bottom: 20px;
-  color: #333;
-  font-weight: bold;
+.app {
+  background: #fff;
+  border-radius: 20px;
+  padding: 20px;
+  width: 400px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
 
-.search-input {
-  width: 100%;
-  max-width: 400px;
-  padding: 8px 12px;
-  font-size: 16px;
+.header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.date {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.time {
+  font-size: 18px;
+  color: #e74c3c;
+}
+
+.todo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.todo-input {
+  width: 80%;
+  padding: 10px;
+  margin-bottom: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  outline: none;
-  transition: border-color 0.3s;
 }
 
-.search-input:focus {
-  border-color: #007bff;
+.add-button {
+  padding: 10px;
+  background: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
-.app-title {
-  font-size: 36px;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 20px;
-  color: #333;
+.add-button:hover {
+  background: #2980b9;
+}
+
+.todo-list {
+  list-style: none;
+  padding: 0;
+  width: 100%;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.todo-item .completed {
+  text-decoration: line-through;
+  color: #aaa;
+}
+
+.delete-button {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  font-size: 16px;
+  cursor: pointer;
 }

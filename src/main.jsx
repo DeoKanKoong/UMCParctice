@@ -1,19 +1,13 @@
-// src/index.jsx (또는 main.jsx)
 import React from 'react';
-import { createRoot } from 'react-dom/client'; // React 18의 createRoot
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // QueryClientProvider 추가
-import { BrowserRouter } from 'react-router-dom';
+import { createRoot } from 'react-dom/client';
+import { Provider } from 'react-redux';
+import store from './redux/store';
 import App from './App';
 
-const queryClient = new QueryClient(); // QueryClient 생성
-
-const container = document.getElementById('root');
-const root = createRoot(container); // createRoot 사용
+const root = createRoot(document.getElementById('root'));
 
 root.render(
-  <QueryClientProvider client={queryClient}>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </QueryClientProvider>
+  <Provider store={store}>
+    <App />
+  </Provider>
 );

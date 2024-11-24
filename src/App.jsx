@@ -1,94 +1,82 @@
-import React, { useState } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
-import ToDoInput from './components/Input/ToDoInput';
-import ToDoList from './components/List/ToDoList';
-import ToDoDetail from './components/Detail/ToDoDetail';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { addTodo, deleteTodo, toggleTodo } from './redux/todoSlice';
 import './App.css';
 
-const fetchTodos = async (searchTitle) => {
-  const response = searchTitle
-    ? await axios.get(`http://localhost:3000/todo?title=${searchTitle}`)
-    : await axios.get('http://localhost:3000/todo');
-  return response.data[0];
-};
-
 function App() {
-  const [searchTitle, setSearchTitle] = useState('');
-  const queryClient = useQueryClient();
-  const navigate = useNavigate();
+  const todos = useSelector((state) => state.todos.todos);
+  const dispatch = useDispatch();
+  const [newTodo, setNewTodo] = useState('');
+  const [currentTime, setCurrentTime] = useState(new Date());
 
-  const { data: tasks, isLoading, error } = useQuery({
-    queryKey: ['todos', searchTitle],
-    queryFn: () => fetchTodos(searchTitle),
-  });
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date()); // 초마다 시간 갱신
+    }, 1000);
+    return () => clearInterval(timer); // 컴포넌트 언마운트 시 타이머 제거
+  }, []);
 
-  const addTodoMutation = useMutation({
-    mutationFn: (newTodo) => axios.post('http://localhost:3000/todo', newTodo),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['todos'] });
-    },
-  });
-
-  const deleteTodoMutation = useMutation({
-    mutationFn: (id) => axios.delete(`http://localhost:3000/todo/${id}`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['todos'] });
-    },
-  });
-
-  const updateTodoMutation = useMutation({
-    mutationFn: ({ id, updates }) => axios.patch(`http://localhost:3000/todo/${id}`, updates),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['todos'] });
-    },
-  });
-
-  const handleSearch = (e) => {
-    setSearchTitle(e.target.value);
+  const handleAddTodo = () => {
+    if (newTodo.trim() === '') return;
+    dispatch(
+      addTodo({
+        id: Date.now(),
+        text: newTodo,
+        completed: false,
+      })
+    );
+    setNewTodo('');
   };
 
-  const goToDetail = (id) => {
-    navigate(`/todo/${id}`);
-  };
+  const formattedDate = currentTime.toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    weekday: 'long',
+  });
+
+  const formattedTime = currentTime.toLocaleTimeString('ko-KR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
 
   return (
-    <div className="app-container">
-      <h1 className="app-title">할 일 목록</h1>
-      <input
-        type="text"
-        className="search-input"
-        placeholder="검색할 제목을 입력하세요"
-        value={searchTitle}
-        onChange={handleSearch}
-      />
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <>
-              <ToDoInput
-                addTodo={(newTodo) => addTodoMutation.mutate(newTodo)}
-                tasks={tasks || []}
-              />
-              {isLoading ? (
-                <p>로딩 중...</p>
-              ) : error ? (
-                <p>에러 발생: {error.message}</p>
-              ) : (
-                <ToDoList
-                  tasks={tasks || []}
-                  deleteTodo={(id) => deleteTodoMutation.mutate(id)}
-                  updateTodo={(id, updates) => updateTodoMutation.mutate({ id, updates })}
-                  goToDetail={goToDetail}
-                />
-              )}
-            </>
-          }
+    <div className="app">
+      <div className="header">
+        <span className="date">{formattedDate}</span>
+        <span className="time">{formattedTime}</span>
+      </div>
+      <div className="todo-container">
+        <input
+          type="text"
+          className="todo-input"
+          placeholder="할 일을 입력하세요"
+          value={newTodo}
+          onChange={(e) => setNewTodo(e.target.value)}
         />
-        <Route path="/todo/:id" element={<ToDoDetail />} />
-      </Routes>
+        <button className="add-button" onClick={handleAddTodo}>
+          +
+        </button>
+        <ul className="todo-list">
+          {todos.map((todo) => (
+            <li key={todo.id} className="todo-item">
+              <input
+                type="checkbox"
+                checked={todo.completed}
+                onChange={() => dispatch(toggleTodo(todo.id))}
+              />
+              <span className={todo.completed ? 'completed' : ''}>{todo.text}</span>
+              <button
+                className="delete-button"
+                onClick={() => dispatch(deleteTodo(todo.id))}
+              >
+                🗑️
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
